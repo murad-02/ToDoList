@@ -1,0 +1,27 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# SQLite database
+*.sqlite3
+*.db
+
+# Logs
+*.log
+
+# Environment files (for secrets like Flask SECRET_KEY)
+.env
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
+.DS_Store
