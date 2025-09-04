@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>My To-Do List</title>
+    <!-- Bootstrap for styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .done {
             text-decoration: line-through;
@@ -10,28 +12,67 @@
         }
     </style>
 </head>
-<body>
-    <h1>My To-Do List ✅</h1>
+<body class="container py-5">
 
-    <form action="/add" method="post">
-        <input type="text" name="task" placeholder="Enter a new task" required>
-        <button type="submit">Add Task</button>
+    <h1 class="mb-4">My To-Do List ✅</h1>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-warning">
+                {% for msg in messages %}
+                    <p>{{ msg }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Add task form -->
+    <form action="/add" method="post" class="d-flex mb-3">
+        <input type="text" name="task" class="form-control me-2" placeholder="Enter a new task" required>
+        <select name="priority" class="form-select me-2">
+            <option value="Low">Low</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="High">High</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Add Task</button>
     </form>
 
-    <ul>
+    <!-- Task list -->
+    <ul class="list-group">
         {% for task in tasks %}
-            <li class="{{ 'done' if task.completed else '' }}">
-                {{ task.content }}
-                <form action="/toggle/{{ task.id }}" method="post" style="display:inline;">
-                    <button type="submit">
-                        {% if task.completed %} Undo {% else %} Done {% endif %}
-                    </button>
-                </form>
-                <form action="/delete/{{ task.id }}" method="post" style="display:inline;">
-                    <button type="submit">❌</button>
-                </form>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="{{ 'done' if task.completed else '' }}">
+                    <strong>[{{ task.priority }}]</strong> {{ task.content }}
+                    <small class="text-muted"> (Added: {{ task.created_at.strftime('%Y-%m-%d %H:%M') }})</small>
+                </div>
+                <div>
+                    <!-- Toggle button -->
+                    <form action="/toggle/{{ task.id }}" method="post" style="display:inline;">
+                        <button class="btn btn-sm btn-success" type="submit">
+                            {% if task.completed %} Undo {% else %} Done {% endif %}
+                        </button>
+                    </form>
+
+                    <!-- Edit form (inline) -->
+                    <form action="/edit/{{ task.id }}" method="post" style="display:inline;">
+                        <input type="text" name="new_content" value="{{ task.content }}" required>
+                        <select name="new_priority">
+                            <option value="Low" {% if task.priority == 'Low' %}selected{% endif %}>Low</option>
+                            <option value="Medium" {% if task.priority == 'Medium' %}selected{% endif %}>Medium</option>
+                            <option value="High" {% if task.priority == 'High' %}selected{% endif %}>High</option>
+                        </select>
+                        <button class="btn btn-sm btn-warning" type="submit">Edit</button>
+                    </form>
+
+                    <!-- Delete button -->
+                    <form action="/delete/{{ task.id }}" method="post" style="display:inline;">
+                        <button class="btn btn-sm btn-danger" type="submit">❌</button>
+                    </form>
+                </div>
             </li>
         {% endfor %}
     </ul>
+
 </body>
 </html>
